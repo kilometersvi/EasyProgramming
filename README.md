@@ -80,11 +80,11 @@ class MyClass:
     def foo(self, arg1, arg2=20):
         return arg1 + arg2
 
-c = MyClass(1,2)
-print(f"dynamic foo: {c.foo(5, 5)} == 10")
+my_instance = MyClass(1,2)
+print(f"dynamic foo: {my_instance.foo(5, 5)} == 10")
 print(f"static foo: {MyClass.foo(5, 5)} == 10")
-print(f"dynamic foo, with instance attributes as arguments: {c.foo()} == 3")
-print(f"dynamic foo, with instance attribute argument positioning: {c.foo(arg2 = 4)} == 5")
+print(f"dynamic foo, with instance attributes as arguments: {my_instance.foo()} == 3")
+print(f"dynamic foo, with instance attribute argument positioning: {my_instance.foo(arg2 = 4)} == 5")
 print(f"static foo, with default argument positioning: {MyClass.foo(5)} == 25")
 ```
 
