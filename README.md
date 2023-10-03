@@ -2,6 +2,11 @@
 
 a bunch of classes and functions i use in stuff sometimes
 
+includes:
+- untyped
+- adjumerate
+- unique_token
+
 ## install
 
 ```
