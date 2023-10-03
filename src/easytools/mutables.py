@@ -27,14 +27,14 @@ class MutableInteger:
             raise ValueError("MutableInteger value must be an integer")
 
     def __iadd__(self, value):
-        if isinstance(other, int):
-            self._value += other
+        if isinstance(value, int):
+            self._value += value
             return self
         raise ValueError("Can only add integers to MutableInteger")
 
-    def __isub__(self, other):
-        if isinstance(other, int):
-            self._value -= other
+    def __isub__(self, value):
+        if isinstance(value, int):
+            self._value -= value
             return self
         raise ValueError("Can only subtract integers to MutableInteger")
 

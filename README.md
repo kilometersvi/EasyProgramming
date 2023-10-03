@@ -2,6 +2,12 @@
 
 a bunch of classes and functions i use in stuff sometimes
 
+## install
+
+```
+pip3 install git+https://github.com/kilometersvi/easytools.git
+```
+
 ## docs
 
 ### untyped decorator
@@ -58,7 +64,6 @@ print(c.foo(3, 4))  # This will return 7
 to
 ```
 #this
-import easytools
 from easytools.adaptive_method import untyped
 
 class MyClass:
@@ -72,10 +77,10 @@ class MyClass:
 
 c = MyClass(1,2)
 print(f"dynamic foo: {c.foo(5, 5)} == 10")
-print(f"static foo: {MyClass(5, 5)} == 10")
+print(f"static foo: {MyClass.foo(5, 5)} == 10")
 print(f"dynamic foo, with instance attributes as arguments: {c.foo()} == 3")
 print(f"dynamic foo, with instance attribute argument positioning: {c.foo(arg2 = 4)} == 5")
-print(f"static foo, with default argument positioning: {MyClass(5)} == 25")
+print(f"static foo, with default argument positioning: {MyClass.foo(5)} == 25")
 ```
 
 you can also use a list instead of dict, assuming parameter names and instance attr names are identical:
@@ -110,7 +115,6 @@ to
 ```
 #this:
 
-import easytools
 from easytools.adjumerate import adjumerate
 
 for i, x in adjumerate(range(10), start=0):
@@ -118,7 +122,7 @@ for i, x in adjumerate(range(10), start=0):
         i.set(0)
     if i == 4:
         i += 1
-    print(f"been here for {i.raw} entire iters")
+    print(f"been here for {i.raw} entire iters, but my count is at {i}")
 ```
 
 ### unique token handler
@@ -126,13 +130,12 @@ for i, x in adjumerate(range(10), start=0):
 generate unique tokens that wouldn't possibly end up in your corpus.
 
 ```
-import easytools
 from easytools.unique_token import UniqueTokenHandler
 
 u = UniqueTokenHandler()
 
 token = u.generate()
 print(f'{token} probably looks like "$̶͇̖͍̹͈̮̦͙͔̗͈͉͖̬̪̌͌͐͊̀̎͌̀́̓͋̎̎̾̈́̍̔̽̕͝͝ͅ"')
-id = u.get(c)
-print(f'this token's id is {id}. and in case you forgot, the token is {u.get(id)}')
+id = u.get(token)
+print(f"this token's id is {id}. and in case you forgot, the token is {u.get(id)}")
 ```

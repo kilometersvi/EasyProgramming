@@ -1,4 +1,4 @@
-from mutables import MutableInteger
+from easytools.mutables import MutableInteger
 import inspect
 
 class adjumerate:

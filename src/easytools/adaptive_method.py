@@ -1,7 +1,7 @@
 import inspect
 from functools import wraps
-from adjumerate import adjumerate
-from unique_token import UniqueTokenHandler
+from easytools.adjumerate import adjumerate
+from easytools.unique_token import UniqueTokenHandler
 
 def is_instance_of_method(obj, method):
     return hasattr(method, '__self__') and isinstance(obj, method.__self__.__class__)

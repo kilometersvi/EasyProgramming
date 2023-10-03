@@ -7,13 +7,10 @@ setup(
     name='easytools',
     version='0.1',
     description="a bunch o junk",
-    package_dir={"": "src"},
     packages=[#find_packages(),
-              easytools.adaptive_method,
-              easytools.adjumerate,
-              easytools.unique_token
+              "easytools"
               ],
-    install_requires=[],
+    package_dir={"": "src"},
     classifiers=[
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.6",
@@ -28,7 +25,7 @@ setup(
     extras_require={
         "dev": ["pytest", "check-manifest", "twine"],
     },
-    url="https://github.com/kilometersvi/EasyProgramming",
+    url="https://github.com/kilometersvi/easytools",
     author="Miles Milosevich",
     author_email="miles@milosevi.ch",
 )
