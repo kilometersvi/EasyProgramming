@@ -3,9 +3,9 @@
 a bunch of classes and functions i use in stuff sometimes
 
 includes:
-- untyped
-- adjumerate
-- unique_token
+- untyped: a decorator for making instance functions act both static and dynamic depending on context
+- adjumerate: adjustable enumerate-like iterable
+- unique_token: unique token generator
 
 ## install
 
