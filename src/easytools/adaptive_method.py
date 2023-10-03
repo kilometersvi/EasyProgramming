@@ -84,7 +84,10 @@ def untyped(param_to_instance_attr_map=None, inverse=False):
                         if not inverse:
                             for p in param_to_instance_attr_map:
                                 if p in parameters:
-                                    i_param_dict[p] = instance.__getattribute__(p)
+                                    try:
+                                        i_param_dict[p] = instance.__getattribute__(p)
+                                    except AttributeError as ae:
+                                        pass #this might occur when running class method in class init, eg self.var = self.untypedfunct(var)
                                 else:
                                     raise AttributeError(f"{self.func.__name__}() has no parameter '{p}'")
                         else:
