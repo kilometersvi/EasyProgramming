@@ -19,30 +19,33 @@ pip3 install git+https://github.com/kilometersvi/easytools.git
 
 prevent instantiating objects for a single function call, while also avoiding overloading functions to make them compatible for both static and dynamic purposes.
 
-switch from
+switch from this:
 
 ```
-#this:
 class MyClass:
-    def __init__(self, attr1=None, attr2=None):
-        self.attr1 = attr1
-        self.attr2 = attr2
+    def __init__(self):
+        pass
 
     def foo(self, arg1, arg2):
         return arg1 + arg2
 
-c = MyClass()
+c = MyClass() # <-- unnesseccary instantiation :(
+print c.foo(1,2)
 
 ```
-or
+
+and this:
+
 ```
-#this:
 class MyClass:
     def __init__(self, attr1, attr2):
         self.attr1 = attr1
         self.attr2 = attr2
 
     def foo(self, arg1=None, arg2=None):
+
+        # confusing and not very readable :(
+
         if arg1 is None and arg2 is None:
             return self.attr1 + self.attr2
 
@@ -52,23 +55,20 @@ class MyClass:
             raise ValueError("Invalid arguments provided")
 
     @staticmethod
-    def foo_static(arg1, arg2):
+    def foo_static(arg1, arg2): # <-- different function names for static vs dynamic access :(
+
         return arg1 + arg2
 
-# Instance method
-c = MyClass(1, 2)
-print(c.foo())  # This will use attr1 and attr2 and return 3
-
-# Static method
-print(MyClass.foo_static(3, 4))  # This will return 7
-
-# Also, you can call the original foo method with arguments
-print(c.foo(3, 4))  # This will return 7
+my_instance = MyClass(1, 2)
+print(f"dynamic foo: {c.foo()} == 3")
+print(f"static foo: {MyClass.foo_static(3, 4)} == 7")
+print(f"dynamic foo with only args: {c.foo(3, 4)} == 7")
 
 ```
-to
+
+to this:
+
 ```
-#this
 from easytools.adaptive_method import untyped
 
 class MyClass:
@@ -81,6 +81,7 @@ class MyClass:
         return arg1 + arg2
 
 my_instance = MyClass(1,2)
+
 print(f"dynamic foo: {my_instance.foo(5, 5)} == 10")
 print(f"static foo: {MyClass.foo(5, 5)} == 10")
 print(f"dynamic foo, with instance attributes as arguments: {my_instance.foo()} == 3")
@@ -91,35 +92,50 @@ print(f"static foo, with default argument positioning: {MyClass.foo(5)} == 25")
 you can also use a list instead of dict, assuming parameter names and instance attr names are identical:
 
 ```
-@untyped(["arg1", "arg2"])
+class MyClass:
+    def __init__(self, arg1, arg2):
+        self.arg1 = arg1
+        self.arg2 = arg2
+
+    @untyped(["arg1", "arg2"])
+    def foo(self, arg1, arg2):
+        return arg1 + arg2
+
 ```
 
 you can also use a list with the inverse parameter to map all matching parameters/instance attributes pairs except the ones included in list:
 
 ```
-@untyped(["arg1"], inverse=True)
+class MyClass:
+    def __init__(self, arg1, arg2, not_for_funct):
+        self.arg1 = arg1
+        self.arg2 = arg2
+        self.not_for_funct = not_for_funct
+
+    @untyped(["not_for_funct"], inverse=True)
+    def foo(self, arg1, arg2):
+        return arg1 + arg2
 ```
 
 ### adjumerate (adjustable enumerating iterable)
 
 adjust the index returned by enumerate to act as a adjustable counter. makes code look a little more pleasant.
 
-switch from
+switch from this:
 
 ```
-#this:
-i = 0
+i = 0 # <-- why do we still need to do this?
 for x in range(10):
     if not i%7:
         i = 0
     if i == 4:
         i += 1
-    i += 1
+    i += 1 # <-- i want the loop to handle this...
 ```
-to
-```
-#this:
 
+to this:
+
+```
 from easytools.adjumerate import adjumerate
 
 for i, x in adjumerate(range(10), start=0):
