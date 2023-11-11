@@ -3,6 +3,7 @@ from functools import wraps
 from easytools.adjumerate import adjumerate
 from easytools.unique_token import UniqueTokenHandler
 
+
 def is_instance_of_method(obj, method):
     return hasattr(method, '__self__') and isinstance(obj, method.__self__.__class__)
 
@@ -125,28 +126,9 @@ def untyped(param_to_instance_attr_map=None, inverse=False):
 
     return AdaptiveMethod
 
-
-# Example usage:
-
-class MyClass:
-    def __init__(self, attribute1, attribute2):
-        self.attribute1 = attribute1
-        self.attribute2 = attribute2
-
-    @untyped({"arg1": "attribute1", "arg2": "attribute2"})
-    def foo(self, arg1, arg2=None):
-        return arg1 + arg2
-
-    @untyped(["attribute1","attribute2"])
-    def foo2(self, attribute1, attribute2):
-        return attribute1 - attribute2
-
-    @untyped(["attribute1"])
-    def foo3(self, attribute1, attribute2=13):
-        return attribute1*attribute2
-
-
 if __name__ == "__main__":
+    # Example usage:
+
     c = MyClass(1,2)
     #print(c.foo(5))       # 6 #unsupported
 

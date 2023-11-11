@@ -15,7 +15,9 @@ pip3 install git+https://github.com/kilometersvi/easytools.git
 
 ## docs
 
-### untyped decorator
+### untyped decorator (old)
+
+check untypedmethod.md for newer untypedmethod decorator
 
 prevent instantiating objects for a single function call, while also avoiding overloading functions to make them compatible for both static and dynamic purposes.
 
