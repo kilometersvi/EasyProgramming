@@ -1,6 +1,7 @@
 import pytest
-from easytools.decorators import untypedmethod
+from easytools.decorators import flexmethod
 import inspect
+
 
 
 
@@ -10,22 +11,53 @@ class MyClass:
     def __init__(self, arg1, arg2):
         self.arg1 = arg1
         self.arg2 = arg2
-    @untypedmethod('nself_arg1', nself_arg2=0)
+    
+    
+    @flexmethod('nself_arg1', nself_arg2=0)
     def foo(nself, arg1, arg2):
         return nself.arg1 + nself.arg2 + arg1 + arg2
     
-    @untypedmethod('arg1')
+
+    @flexmethod('nself_arg1', nself_arg2=0)
+    def foo4(nself, *args, **kwargs):
+        print(f'nself:{nself}')
+        print(f'args:{args}')
+        print(f'kwargs:{kwargs}')
+        print(f'nself.__dict__: {nself.__dict__}')
+
+        print(f'nself.arg1:{nself.arg1}')
+        print(f'nself.arg2:{nself.arg2}')
+        return nself.arg1 + nself.arg2 + sum(args) + sum(kwargs.values())
+    
+    
+    @flexmethod('arg1')
     def foo2(nself, arg1, arg2):
         return nself.arg1 + arg1 + arg2
     
-    @untypedmethod('arg1')
+    @flexmethod('arg1')
     def foo_with_self_kwargs(nself, arg1):
         return nself.arg1 + nself.arg2 + nself.attr
+    
+    @flexmethod
+    def foo3(nself):
+        return nself.arg1 + nself.arg2
+    
+
+def testT4_2_test_foo_instance_method_call():
+    instance = MyClass(1, 1)
+    print(f"instance arg1: {instance.arg1}")
+    print(f"instance arg2: {instance.arg2}")
+    result = instance.foo4(arg1=2, arg2=3)
+    assert result == 7, "Instance method call failed"
 
 
 def testT1_test_foo_with_all_arguments():
     result = MyClass.foo(nself_arg1=1, nself_arg2=2, arg1=3, arg2=4)
     assert result == 10, "Test with all arguments failed"
+
+def testT44_2_test_UserDummy__static_call_no_args__no_parenthesis():
+    assert MyClass.foo3({'arg1':3, 'arg2':4}) == 7
+
 
 def testT2_test_foo_with_missing_namespace_arguments():
     with pytest.raises(AttributeError):
@@ -53,19 +85,19 @@ class MyClass2:
         for key, value in kwargs.items():
             setattr(self, key, value)
 
-    @untypedmethod('arg2', 'arg1')
+    @flexmethod('arg2', 'arg1')
     def foo1(self, arg1, arg2):
         return arg1 + arg2
 
-    @untypedmethod('arg1', arg2=4)
+    @flexmethod('arg1', arg2=4)
     def foo2(self, arg1):
         return arg1 + self.arg2
 
-    @untypedmethod('arg1', 'arg2', arg3=6)
+    @flexmethod('arg1', 'arg2', arg3=6)
     def foo3(self, arg1, arg2, arg3):
         return arg1 + arg2 + arg3
     
-    @untypedmethod('arg1', 'arg2', arg3=6)
+    @flexmethod('arg1', 'arg2', arg3=6)
     def foo4(nself, arg2):
         return nself.arg1 + arg2 + nself.arg3
 
@@ -105,7 +137,7 @@ def testT15_test_StaticSig__foo3_instance_call():
     assert instance.foo3(1, 2, 3) == 6
 
 class MyClass6:
-    @untypedmethod('arg0', arg1=1)
+    @flexmethod('arg0', arg1=1)
     def test_func(nself, arg1):
         return nself.arg0 + arg1
 
@@ -120,23 +152,27 @@ class MyClass3:
         nself.arg1 = arg1
         nself.arg2 = arg2
 
-    @untypedmethod('arg1', 'arg2')
+    @flexmethod('arg1', 'arg2')
     def foo(nself):
         return nself.arg1 + nself.arg2
 
-    @untypedmethod('arg1', 'arg2')
+    @flexmethod('arg1', 'arg2')
     def foo_with_args(nself, arg3):
         return nself.arg1 + nself.arg2 + arg3
 
-    @untypedmethod('arg1', 'arg2')
+    @flexmethod('arg1', 'arg2')
     def foo_with_kwargs(nself, **kwargs):
+        print("!!!!!args:!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        print(nself.arg1)
+        print(nself.arg2)
+        print(kwargs)
         return nself.arg1 + nself.arg2 + sum(kwargs.values())
 
-    @untypedmethod('arg1', arg2=3)  
+    @flexmethod('arg1', arg2=3)  
     def foo_with_defaults(nself, arg3=5):  
         return nself.arg1 + nself.arg2 + arg3
     
-    @untypedmethod('arg1', nself_arg2=3)  
+    @flexmethod('arg1', nself_arg2=3)  
     def foo_with_duplicate_names_in_nmsp_and_locals(nself, arg2=5): 
         return nself.arg1 + nself.arg2 + arg2
 
@@ -179,16 +215,22 @@ def testT27_test_InjectNamespace__static_call_with_duplicate_kwargs_in_nmsp_and_
     assert MyClass3.foo_with_duplicate_names_in_nmsp_and_locals(1) == 9
 
 def testT28_test_InjectNamespace__static_call_with_duplicate_kwargs_in_nmsp_and_locals_incorrect():
-
     with pytest.raises(ValueError):
         class MyClass3:
             def __init__(nself, arg1, arg2):
                 nself.arg1 = arg1
                 nself.arg2 = arg2
-            @untypedmethod('arg1', arg2=3) 
+            @flexmethod('arg1', arg2=3) 
             def foo_with_duplicate_names_in_nmsp_and_locals_incorrect(nself, arg2=5, arg3=10):  
+                print(f'nself.arg1: {nself.arg1}')
+                print(f'nself.arg2: {nself.arg2}')
+                print(f'arg2: {arg2}')
+                print(f'arg3: {arg3}')
                 return nself.arg1 + nself.arg2 + arg2 + arg3
 
+        instance = MyClass3(1, 2)
+        result = instance.foo_with_duplicate_names_in_nmsp_and_locals_incorrect(arg2=4, arg3=5)
+        assert result == 12
 
 #===== User Provides Dummy Instance Tests =====
 
@@ -197,23 +239,23 @@ class MyClass4:
         nself.arg1 = arg1
         nself.arg2 = arg2
 
-    @untypedmethod()
+    @flexmethod()
     def foo(nself):
         return nself.arg1 + nself.arg2
 
-    @untypedmethod()
+    @flexmethod()
     def foo_with_args(nself, arg3):
         return nself.arg1 + nself.arg2 + arg3
 
-    @untypedmethod()
+    @flexmethod()
     def foo_with_kwargs(nself, **kwargs):
         return nself.arg1 + nself.arg2 + sum(kwargs.values())
 
-    @untypedmethod() 
+    @flexmethod() 
     def foo_with_defaults(nself, arg3=5):  
         return nself.arg1 + nself.arg2 + arg3
     
-    @untypedmethod() 
+    @flexmethod() 
     def foo_with_duplicate_names_in_nmsp_and_locals(nself, arg2=5): 
         return nself.arg1 + nself.arg2 + arg2
 
@@ -261,23 +303,23 @@ class MyClass5:
         nself.arg1 = arg1
         nself.arg2 = arg2
 
-    @untypedmethod
+    @flexmethod
     def foo(nself):
         return nself.arg1 + nself.arg2
 
-    @untypedmethod
+    @flexmethod
     def foo_with_args(nself, arg3):
         return nself.arg1 + nself.arg2 + arg3
 
-    @untypedmethod
+    @flexmethod
     def foo_with_kwargs(nself, **kwargs):
         return nself.arg1 + nself.arg2 + sum(kwargs.values())
 
-    @untypedmethod
+    @flexmethod
     def foo_with_defaults(nself, arg3=5):  
         return nself.arg1 + nself.arg2 + arg3
     
-    @untypedmethod
+    @flexmethod
     def foo_with_duplicate_names_in_nmsp_and_locals(nself, arg2=5): 
         return nself.arg1 + nself.arg2 + arg2
 
@@ -354,23 +396,23 @@ class MyClass7:
         nself.arg1 = arg1
         nself.arg2 = arg2
 
-    @untypedmethod()
+    @flexmethod()
     def foo_dummy(nself):
         return nself.arg1 + nself.arg2
         
-    @untypedmethod
+    @flexmethod
     def foo_dummy2(nself):
         return nself.arg1 + nself.arg2
     
-    @untypedmethod
+    @flexmethod
     def foo_dummy3(nself, arg3):
         return nself.arg1 + nself.arg2 + arg3
 
-    @untypedmethod('arg0', arg1=1)
+    @flexmethod('arg0', arg1=1)
     def foo_full_static(nself, arg1):
         return nself.arg1 + arg1
 
-    @untypedmethod('arg0')
+    @flexmethod('arg0')
     def foo_namespace_injection(nself, arg1):
         return nself.arg1 + arg1
 
@@ -378,38 +420,38 @@ def testT58_test_dummy_insert_mode_signature_static():
     static_callable = MyClass7.foo_dummy
     instance_callable = MyClass7(None, None).foo_dummy
 
-    assert 'assert1'+str(inspect.signature(static_callable)) == 'assert1'+"(nself)"
-    assert 'assert2'+str(inspect.signature(instance_callable)) == 'assert2'+"()"
+    assert "static: "+str(inspect.signature(static_callable)) == "static: "+"(nself)"
+    assert "instance: "+str(inspect.signature(instance_callable)) == "instance: "+"(nself)"
 
 
 def testT59_test_dummy_insert_mode_signature_static_multiple_params():
     static_callable = MyClass7.foo_dummy3
     instance_callable = MyClass7(None, None).foo_dummy3
 
-    assert str(inspect.signature(static_callable)) == "(nself, arg3)"
-    assert str(inspect.signature(instance_callable)) == "(arg3)"
+    assert "static: "+str(inspect.signature(static_callable)) == "static: "+"(nself, arg3)"
+    assert "instance: "+str(inspect.signature(instance_callable)) == "instance: "+"(nself, arg3)"
 
 def testT60_test_dummy_insert_mode_signature_no_parenthesis():
     static_callable = MyClass7.foo_dummy2
     instance_callable = MyClass7(None, None).foo_dummy2
 
-    assert str(inspect.signature(static_callable)) == "(nself)"
-    assert str(inspect.signature(instance_callable)) == "()"
+    assert "static: "+str(inspect.signature(static_callable)) == "static: "+"(nself)"
+    assert "instance: "+str(inspect.signature(instance_callable)) == "instance: "+"(nself)"
 
 def testT61_test_full_static_signature_mode_signature():
     static_callable = MyClass7.foo_full_static
     instance_callable = MyClass7(None, None).foo_full_static
 
-    assert str(inspect.signature(static_callable)) == "(nself_arg0, arg1=1)"
-    assert str(inspect.signature(instance_callable)) == "(arg1)"
+    assert "static: "+str(inspect.signature(static_callable)) == "static: "+"(nself_arg0, arg1=1)"
+    assert "instance: "+str(inspect.signature(instance_callable)) == "instance: "+"(nself, arg1)"
 
 def testT62_test_namespace_injection_mode_signature():
     static_callable = MyClass7.foo_namespace_injection
     i = MyClass7(None, None)
     instance_callable = i.foo_namespace_injection
 
-    assert str(inspect.signature(static_callable)) == "(nself_arg0, arg1)"
-    assert str(inspect.signature(instance_callable)) == "(arg1)"
+    assert "static: "+str(inspect.signature(static_callable)) == "static: "+"(nself_arg0, arg1)"
+    assert "instance: "+str(inspect.signature(instance_callable)) == "instance: "+"(nself, arg1)"
 
 
 

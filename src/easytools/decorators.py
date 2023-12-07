@@ -1,2 +1,2 @@
-from easytools.untypedmethod import untypedmethod
+from easytools.flexmethod import flexmethod
 
