@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='easytools',
-    version='0.1',
+    version='0.2',
     description="a bunch o junk",
     packages=[#find_packages(),
               "easytools"
