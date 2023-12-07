@@ -58,7 +58,6 @@ class StaticOrInstanceDecorator(OptionalParenthesesDecorator):
             return self.get_endpoint(instance, owner)
     
     def get_endpoint(self, instance, owner):
-        print('got')
         self.flags['is_instance_call'] = instance is not None
         self.instance = instance
         self.owner = owner
@@ -86,7 +85,6 @@ class StaticOrInstanceDecorator(OptionalParenthesesDecorator):
 
     def __call__(self, *args, **kwargs):
         
-        print('called from base')
         if not callable(self.func):
             if self.func is not None:
                 self.decorator_args = self.decorator_args + tuple([self.func])
@@ -95,11 +93,9 @@ class StaticOrInstanceDecorator(OptionalParenthesesDecorator):
                 raise TypeError(f'{self.__class__.__name__} can only be applied to callables')
             self.flags['was_called_with_parentheses'] = True
             
-            print('forcing get')
             # force __get__ to be called (which will return the wrapper instead)
             return self.get_exposer(self.get_endpoint) #could do just return self, but this is more verbose
         
-        print('doin this')
         self.user_init()
         self.user_call()
         self.modify_meta()
