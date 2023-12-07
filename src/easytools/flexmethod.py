@@ -4,6 +4,9 @@ import textwrap
 from easytools.inspect_tools import has_var_keyword, get_positional_params, get_default_kwargs, get_var_params
 from typing import Dict, Tuple, Union, List, Any, Callable, Type, Literal, Optional
 from easytools.decorator_bases import EasyDecorator
+import logging
+
+logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.WARNING)
 
 class ArgumentParser:
 
@@ -120,9 +123,9 @@ class SignatureInjectParser(ArgumentParser):
         # cannot determine if user passed to be intended to be used for nmsp or func)
         for k, v in self.static_defaults.items():
             if k in self.func_defaults:
-                print(self.func_defaults)
-                print(self.func_params)
-                print(self.static_defaults)
+                logging.info(self.func_defaults)
+                logging.info(self.func_params)
+                logging.info(self.static_defaults)
                 conflictmsg = " ".join(textwrap.dedent("""
                     The keyword '{k}' is specified as both a parameter and a namespace attribute, leading to ambiguity.
                     Please rename the parameter to '{nmsp_p}{k}' to ensure clarity and avoid conflicts when injecting
@@ -157,19 +160,19 @@ class SignatureInjectParser(ArgumentParser):
         new_kwargs = {}
         for k, v in kwargs.items():
             if k in self.func_params:
-                #print(f'[ksort] {k} in self.func_params')
+                #logging.info(f'[ksort] {k} in self.func_params')
                 new_kwargs[k] = v
             elif k in self.static_params:
-                #print(f'[ksort] {k} in self.static_params')
+                #logging.info(f'[ksort] {k} in self.static_params')
                 nmsp_dict[k] = v
             elif k in self.static_defaults:
-                #print(f'[ksort] {k} in self.static_defaults')
+                #logging.info(f'[ksort] {k} in self.static_defaults')
                 nmsp_dict[k] = v
             elif k in self.func_defaults:
-                #print(f'[ksort] {k} in self.func_defaults')
+                #logging.info(f'[ksort] {k} in self.func_defaults')
                 new_kwargs[k] = v
             elif k[:len(self.n_p)] == self.n_p:
-                #print(f'[ksort] {k} has prefix {self.n_p}')
+                #logging.info(f'[ksort] {k} has prefix {self.n_p}')
                 nmsp_dict[k[len(self.n_p):]] = v
             elif has_var_keyword(self.static_signature):
                 #if func has ** term, lets put this kw in there
@@ -177,7 +180,7 @@ class SignatureInjectParser(ArgumentParser):
 
             else:
                 """
-                print(f'[ksort] {k} unsorted; must belong to self')
+                logging.info(f'[ksort] {k} unsorted; must belong to self')
                 nmsp_dict[k] = v
                 """
                 #this must be a user error; if there is an attribute in self that is required for computation,
@@ -192,14 +195,14 @@ class SignatureInjectParser(ArgumentParser):
                 """).split())
                 raise TypeError(conflictmsg)
         
-        print('at call:')
-        print(self.func_defaults)
-        print(self.func_params)
-        print(self.static_defaults)
+        logging.info('at call:')
+        logging.info(self.func_defaults)
+        logging.info(self.func_params)
+        logging.info(self.static_defaults)
                 
-        print(f"nmsp_dict new: {nmsp_dict}")
-        print(f"new args: {new_args}")
-        print(f"new kwargs: {new_kwargs}")
+        logging.info(f"nmsp_dict new: {nmsp_dict}")
+        logging.info(f"new args: {new_args}")
+        logging.info(f"new kwargs: {new_kwargs}")
 
         return nmsp_dict, new_args, new_kwargs
     
@@ -292,9 +295,9 @@ class FullSignatureParser(ArgumentParser):
                 else:
                     nmsp_attrs[k] = v
         
-        #print(f"nmsp_attrs new: {nmsp_attrs}")
-        #print(f"new args: {()}")
-        #print(f"new kwargs: {new_kwargs}")
+        #logging.info(f"nmsp_attrs new: {nmsp_attrs}")
+        #logging.info(f"new args: {()}")
+        #logging.info(f"new kwargs: {new_kwargs}")
 
         return nmsp_attrs, [], new_kwargs
     
@@ -353,14 +356,14 @@ class ArgumentParsingDecorator(EasyDecorator):
     
     def user_init(self):
         
-        print('initing')
+        logging.info('initing')
 
         self.func_params = get_positional_params(self.func_signature, exclude_self=False) 
         self.func_defaults = get_default_kwargs(self.func_signature)
         self.func_vars = get_var_params(self.func_signature)
         
-        print(f'func defaults: {self.func_defaults}')
-        print(f'self.func_signature: {self.func_signature}')
+        logging.info(f'func defaults: {self.func_defaults}')
+        logging.info(f'self.func_signature: {self.func_signature}')
         self.set_parsers()
 
         #determine handling mode
@@ -368,11 +371,11 @@ class ArgumentParsingDecorator(EasyDecorator):
 
         for parser in self.parsers:
             if parser.condition_check(self.decorator_args, self.decorator_kwargs, self.func_params, self.func_defaults): 
-                print(f'parser found: {parser}, created with:')
-                print(self.decorator_args)
-                print(self.decorator_kwargs)
-                print(self.func_params)
-                print(self.func_defaults)
+                logging.info(f'parser found: {parser}, created with:')
+                logging.info(self.decorator_args)
+                logging.info(self.decorator_kwargs)
+                logging.info(self.func_params)
+                logging.info(self.func_defaults)
                 self.prepare_args = parser(self.func, self.decorator_args, self.decorator_kwargs, self.func_params, self.func_defaults, self.func_vars, self.func_signature)
                 break
         
@@ -418,24 +421,24 @@ class ArgumentParsingDecorator(EasyDecorator):
     
     def wrapper(self, *args, **kwargs):
         
-        print("wrapper called")
+        logging.info("wrapper called")
         #default wrapper for this class is meant for static, override for inst
-        print(self.__dict__)
+        logging.info(self.__dict__)
 
         if self.flags['is_instance_call']:
             #instance call just calls function in default wrapper
             
-            print(args)
-            print(kwargs)
+            logging.info(args)
+            logging.info(kwargs)
             return self.func(self.instance, *args, **kwargs)
         
         #otherwise is static call
         nmsp_attrs, new_args, new_kwargs = self.prepare_args(args, kwargs)
-        print('passed')
+        logging.info('passed')
 
         #returned dict representing nself namespace
         if isinstance(nmsp_attrs, dict):
-            print('was instance called')
+            logging.info('was instance called')
             # remove nmsp tags
             to_proc = []
             for k, v in nmsp_attrs.items():
@@ -467,7 +470,7 @@ class ArgumentParsingDecorator(EasyDecorator):
             
     def call_process(self, *args, **kwargs):
 
-        print('called')
+        logging.info('called')
         # static call
         if self.instance is None:
             # used for static case
