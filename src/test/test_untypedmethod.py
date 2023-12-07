@@ -6,7 +6,7 @@ import inspect
 
 
 # ==== Combined UntypedMethod Class Tests =====
-"""
+
 class MyClass:
     def __init__(self, arg1, arg2):
         self.arg1 = arg1
@@ -100,7 +100,18 @@ class MyClass2:
     @flexmethod('arg1', 'arg2', arg3=6)
     def foo4(nself, arg2):
         return nself.arg1 + arg2 + nself.arg3
+    
+    @flexmethod('arg1', 'arg2', 'arg3')
+    def foo5(nself):
+        return nself.arg1 + nself.arg2 + nself.arg3
 
+
+def testT65_test_StaticSig__foo5_static_call():
+    assert MyClass2.foo5('hi','there','pal') == 'hitherepal'
+
+def testT66_test_StaticSig__foo5_instance_call():
+    instance = MyClass2(arg1='hi',arg2='there',arg3='pal')
+    assert instance.foo5() == 'hitherepal'
 
 def testT6_test_StaticSig__foo1_static_call():
     assert MyClass2.foo1(2, 1) == 3
@@ -144,7 +155,7 @@ class MyClass6:
 def testT16_test_StaticSig__typeerror190():
     with pytest.raises(TypeError):
         MyClass6.test_func(2) # == 3
-"""
+
 # ===== Inject Namespace Into Signature Implementation Tests =====
 
 class MyClass3:
@@ -180,15 +191,14 @@ class MyClass3:
     def foo_with_duplicate_names_in_nmsp_and_locals(nself, arg2=5): 
         return nself.arg1 + nself.arg2 + arg2
 
-"""
+
 def testT63_test_FullSignature__instance_call_order():
     instance = MyClass3(1, 2)
     assert instance.concat() == "1, 2"
-"""
+
 def testT64_test_FullSignature__static_call_order():
     assert MyClass3.concat(1,2) == "1, 2"
 
-"""
 def testT17_test_InjectNamespace__instance_call_no_args():
     instance = MyClass3(1, 2)
     assert instance.foo() == 3
@@ -465,7 +475,7 @@ def testT62_test_namespace_injection_mode_signature():
     assert "static: "+str(inspect.signature(static_callable)) == "static: "+"(nself_arg0, arg1)"
     assert "instance: "+str(inspect.signature(instance_callable)) == "instance: "+"(nself, arg1)"
 
-"""
+
 
 
 
