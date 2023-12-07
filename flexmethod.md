@@ -303,4 +303,5 @@ The `flexmethod` decorator offers a powerful way to write flexible and reusable 
 - Static functions not correctly processing variable keyword parameters (ex: '**kwargs')
 - Wrong parameter order for instance calls to functions with variable keyword parameters
 - Still has debugging on
-- Implement flexmethod.parambind: convert static methods to instance methods
+- Implement flexmethod.parambind: convert static methods to instance methods (from untypedmethod)
+- Allow use of scoped variables in decorator arguments (ie can do @flexmethod(cls.argname, f"arg2={self.arg2}"))

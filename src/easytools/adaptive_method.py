@@ -126,6 +126,7 @@ def untyped(param_to_instance_attr_map=None, inverse=False):
 
     return AdaptiveMethod
 
+"""
 if __name__ == "__main__":
     # Example usage:
 
@@ -142,3 +143,4 @@ if __name__ == "__main__":
     print(f"foo with 2 parameters, called statically (listed): {MyClass.foo2(10, 10)} == 0") # 0
     print(f"foo with 1 self'd parameter and 1 default parameter (listed): {c.foo3()} == 13")
     print(f"foo with 1 parameter and 1 default parameter (listed), called statically: {MyClass.foo3(2)} == 26")
+"""

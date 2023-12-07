@@ -15,9 +15,9 @@ pip3 install git+https://github.com/kilometersvi/easytools.git
 
 ## docs
 
-### flexmethod decorator (old)
+### untypedmethod decorator (old- soon to be obsolete by flexmethod)
 
-check untypedmethod.md for newer flexmethod decorator
+check flexmethod.md for newer flexmethod decorator
 
 prevent instantiating objects for a single function call, while also avoiding overloading functions to make them compatible for both static and dynamic purposes.
 
