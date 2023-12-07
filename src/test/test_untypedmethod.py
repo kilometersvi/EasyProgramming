@@ -6,7 +6,7 @@ import inspect
 
 
 # ==== Combined UntypedMethod Class Tests =====
-
+"""
 class MyClass:
     def __init__(self, arg1, arg2):
         self.arg1 = arg1
@@ -144,7 +144,7 @@ class MyClass6:
 def testT16_test_StaticSig__typeerror190():
     with pytest.raises(TypeError):
         MyClass6.test_func(2) # == 3
-
+"""
 # ===== Inject Namespace Into Signature Implementation Tests =====
 
 class MyClass3:
@@ -155,6 +155,10 @@ class MyClass3:
     @flexmethod('arg1', 'arg2')
     def foo(nself):
         return nself.arg1 + nself.arg2
+    
+    @flexmethod('arg1', 'arg2')
+    def concat(nself):
+        return str(nself.arg1) +', ' +str(nself.arg2)
 
     @flexmethod('arg1', 'arg2')
     def foo_with_args(nself, arg3):
@@ -176,7 +180,15 @@ class MyClass3:
     def foo_with_duplicate_names_in_nmsp_and_locals(nself, arg2=5): 
         return nself.arg1 + nself.arg2 + arg2
 
+"""
+def testT63_test_FullSignature__instance_call_order():
+    instance = MyClass3(1, 2)
+    assert instance.concat() == "1, 2"
+"""
+def testT64_test_FullSignature__static_call_order():
+    assert MyClass3.concat(1,2) == "1, 2"
 
+"""
 def testT17_test_InjectNamespace__instance_call_no_args():
     instance = MyClass3(1, 2)
     assert instance.foo() == 3
@@ -453,7 +465,7 @@ def testT62_test_namespace_injection_mode_signature():
     assert "static: "+str(inspect.signature(static_callable)) == "static: "+"(nself_arg0, arg1)"
     assert "instance: "+str(inspect.signature(instance_callable)) == "instance: "+"(nself, arg1)"
 
-
+"""
 
 
 

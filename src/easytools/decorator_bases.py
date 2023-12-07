@@ -6,6 +6,7 @@ class OptionalParenthesesDecorator:
     def __init__(self, func=None, *args, **kwargs):
         self.func = func
         self.decorator_args = args if args and len(args) > 0 else tuple()
+
         self.decorator_kwargs = kwargs if len(kwargs) > 0 else dict()
         self.flags = {'was_called_with_parentheses' : False}
 
@@ -84,15 +85,15 @@ class StaticOrInstanceDecorator(OptionalParenthesesDecorator):
         return self.get_endpoint(instance, owner)
 
     def __call__(self, *args, **kwargs):
-        
         if not callable(self.func):
             if self.func is not None:
-                self.decorator_args = self.decorator_args + tuple([self.func])
+                self.decorator_args = tuple([self.func]) + self.decorator_args
             self.func = args[0]
             if not callable(self.func):
                 raise TypeError(f'{self.__class__.__name__} can only be applied to callables')
             self.flags['was_called_with_parentheses'] = True
             
+
             # force __get__ to be called (which will return the wrapper instead)
             return self.get_exposer(self.get_endpoint) #could do just return self, but this is more verbose
         
