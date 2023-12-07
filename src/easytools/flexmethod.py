@@ -431,6 +431,7 @@ class ArgumentParsingDecorator(EasyDecorator):
             
             logging.info(args)
             logging.info(kwargs)
+            self.instance.__dict__.update({'__static_from_flexmethod__': False})
             return self.func(self.instance, *args, **kwargs)
         
         #otherwise is static call
@@ -450,6 +451,9 @@ class ArgumentParsingDecorator(EasyDecorator):
                 nmsp_attrs[k[len(self.n_p):]] = nmsp_attrs[k]
                 del nmsp_attrs[k]
             
+            # attribute allowing function to determine if it was called statically or not
+            nmsp_attrs['__static_from_flexmethod__'] = True
+
             # make dummy instance that will act as nself namespace
             nself = self.owner.__new__(self.owner)
             nself.__dict__.update(nmsp_attrs)
@@ -458,6 +462,8 @@ class ArgumentParsingDecorator(EasyDecorator):
         
         # arg preparer returned the nself namespace
         else:
+            nmsp_attrs.__dict__.update({'__static_from_flexmethod__': True})
+
             nself = nmsp_attrs
         
         return self.func(nself, *new_args, **new_kwargs)
