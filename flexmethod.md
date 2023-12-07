@@ -251,7 +251,9 @@ print(instance.full_static_signature_given(3))  # Output: 8
 print(MyClass.full_static_signature_given(5, 1, 2))  # Output: 8
 ```
 
+### Variable Injection
 
+For now, you can determine if your function was called statically or dynamically within the scope of your function by accessing `nself.__static_from_flexmethod__`. It is planned to move this to a variable outside of the scope of nself to not leave litter on instances.
 
 ### `inspect` Compatibility
 
