@@ -53,7 +53,7 @@ class ArgumentParser:
         return self.n_p + p
     
     @classmethod
-    def pattern_match_failure(cls, implemented_keys, required_keys):
+    def pattern_match_failure(cls, decorator_args, decorator_kwargs, func_params, func_defaults):
         raise ValueError()
     
 class DummyParser(ArgumentParser):
@@ -80,7 +80,7 @@ class DummyParser(ArgumentParser):
         return len(implemented_keys) == 0
 
     @classmethod
-    def pattern_match_failure(cls, implemented_keys, required_keys):
+    def pattern_match_failure(cls, decorator_args, decorator_kwargs, func_params, func_defaults):
         raise ValueError('Too many arguments.')
 
 class ArgAttrMapParser(ArgumentParser):
